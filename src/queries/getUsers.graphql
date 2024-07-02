@@ -1,0 +1,26 @@
+query getUsersNormalAndLinkedPosts {
+  user(id: 1) {
+    id
+    email
+    username
+    posts {
+      __typename
+      ... on NormalPost {
+        id
+        author
+        body
+        dateCreated
+        dateUpdated
+        title
+      }
+      ... on LinkedPost {
+        id
+        author
+        dateCreated
+        dateUpdated
+        link
+        title
+      }
+    }
+  }
+}
