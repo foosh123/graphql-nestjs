@@ -2,6 +2,32 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+interface Post {
+  id: ID!
+  author: String!
+  dateCreated: String!
+  dateUpdated: String!
+  title: String!
+}
+
+type NormalPost implements Post {
+  id: ID!
+  author: String!
+  dateCreated: String!
+  dateUpdated: String!
+  title: String!
+  body: String!
+}
+
+type LinkedPost implements Post {
+  id: ID!
+  author: String!
+  dateCreated: String!
+  dateUpdated: String!
+  title: String!
+  link: String!
+}
+
 type User {
   id: ID!
   email: String!
@@ -9,26 +35,7 @@ type User {
   username: String!
 }
 
-union Post = NormalPost | LinkedPost
-
-type NormalPost {
-  id: ID!
-  author: String!
-  body: String!
-  dateCreated: String!
-  dateUpdated: String!
-  title: String!
-}
-
-type LinkedPost {
-  id: ID!
-  author: String!
-  link: String!
-  dateCreated: String!
-  dateUpdated: String!
-  title: String!
-}
-
 type Query {
-  user(id: Float!): User!
+  getUsers: [User!]!
+  getUser(id: Float!): User!
 }

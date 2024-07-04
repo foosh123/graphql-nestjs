@@ -1,28 +1,50 @@
-import { Field, ID, ObjectType, createUnionType } from '@nestjs/graphql';
+import { Field, ID, InterfaceType, ObjectType } from '@nestjs/graphql';
 
-@ObjectType()
-export class NormalPost {
+@InterfaceType()
+export abstract class Post {
   @Field(() => ID)
   id: number;
 
   @Field()
   author: string;
+
+  @Field()
+  dateCreated: string;
+
+  @Field()
+  dateUpdated: string;
+
+  @Field()
+  title: string;
+}
+
+@ObjectType({ implements: Post })
+export class NormalPost implements Post {
+  @Field(() => ID)
+  id: number;
+
+  @Field()
+  author: string;
+
+  @Field()
+  dateCreated: string;
+
+  @Field()
+  dateUpdated: string;
+
+  @Field()
+  title: string;
 
   @Field()
   body: string;
 
-  @Field()
-  dateCreated: string;
-
-  @Field()
-  dateUpdated: string;
-
-  @Field()
-  title: string;
+  constructor(partial: Partial<NormalPost>) {
+    Object.assign(this, partial);
+  }
 }
 
-@ObjectType()
-export class LinkedPost {
+@ObjectType({ implements: Post })
+export class LinkedPost implements Post {
   @Field(() => ID)
   id: number;
 
@@ -30,9 +52,6 @@ export class LinkedPost {
   author: string;
 
   @Field()
-  link: string;
-
-  @Field()
   dateCreated: string;
 
   @Field()
@@ -40,21 +59,14 @@ export class LinkedPost {
 
   @Field()
   title: string;
-}
 
-export const Post = createUnionType({
-  name: 'Post', // the name of the GraphQL union
-  types: () => [NormalPost, LinkedPost] as const,
-  resolveType(value) {
-    if (value.body) {
-      return NormalPost;
-    }
-    if (value.link) {
-      return LinkedPost;
-    }
-    return null;
-  },
-});
+  @Field()
+  link: string;
+
+  constructor(partial: Partial<LinkedPost>) {
+    Object.assign(this, partial);
+  }
+}
 
 @ObjectType()
 export class User {
@@ -65,7 +77,7 @@ export class User {
   email: string;
 
   @Field(() => [Post])
-  posts: Array<typeof Post>;
+  posts: Post[];
 
   @Field()
   username: string;

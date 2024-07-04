@@ -1,43 +1,41 @@
-import { Resolver, Query, Args, ResolveField, Parent } from '@nestjs/graphql';
-import { User, Post } from './users.model';
+import { Resolver, Query, Args, ID } from '@nestjs/graphql';
+import { User, NormalPost, LinkedPost } from './users.model';
 
 @Resolver(() => User)
 export class UsersResolver {
-  private users = [
+  private users: User[] = [
     {
       id: 1,
-      email: 'user1@example.com',
+      email: 'example@example.com',
       username: 'user1',
       posts: [
-        {
-          __typename: 'NormalPost',
+        new NormalPost({
           id: 1,
           author: 'user1',
-          body: 'This is a normal post',
+          body: 'This is a normal post body',
           dateCreated: '2024-07-01',
           dateUpdated: '2024-07-01',
           title: 'Normal Post Title',
-        },
-        {
-          __typename: 'LinkedPost',
+        }),
+        new LinkedPost({
           id: 2,
           author: 'user1',
+          link: 'https://example.com',
           dateCreated: '2024-07-01',
           dateUpdated: '2024-07-01',
-          link: 'https://example.com',
           title: 'Linked Post Title',
-        },
+        }),
       ],
     },
   ];
 
-  @Query(() => User)
-  user(@Args('id') id: number): User {
-    return this.users.find((user) => user.id === id);
+  @Query(() => [User])
+  async getUsers() {
+    return this.users;
   }
 
-  @ResolveField(() => [Post])
-  posts(@Parent() user: User): Array<typeof Post> {
-    return user.posts;
+  @Query(() => User)
+  async getUser(@Args('id') id: number): Promise<User> {
+    return this.users.find((user) => user.id === id);
   }
 }
